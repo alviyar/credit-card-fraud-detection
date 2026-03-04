@@ -9,9 +9,10 @@ Original file is located at
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 import seaborn as sns
 
-df=pd.read_csv('/content/credit_card_fraud_10k.csv')
+df=pd.read_csv('credit_card_fraud_10k.csv')
 df.head()
 
 df.info()
@@ -145,3 +146,35 @@ print(classification_report(y_test, y_pred))
 from sklearn.metrics import roc_auc_score
 
 roc_auc_score(y_test, y_prob)
+
+import ollama
+
+fraud_rate = df['is_fraud'].mean()
+night_fraud_rate = df.groupby('night_transaction_flag')['is_fraud'].mean()[1]
+foreign_fraud_rate = df.groupby('foreign_transaction')['is_fraud'].mean()[1]
+high_amount_rate = df.groupby('high_amount_flag')['is_fraud'].mean()[1]
+
+summary_prompt = f"""
+You are a financial risk analyst.
+
+Here are fraud analysis results from a credit card dataset:
+
+Overall fraud rate: {fraud_rate:.4f}
+Fraud rate for night transactions: {night_fraud_rate:.4f}
+Fraud rate for foreign transactions: {foreign_fraud_rate:.4f}
+Fraud rate for high amount transactions: {high_amount_rate:.4f}
+
+Based on this data:
+1. Summarize key fraud patterns and give quantifiable results.
+2. Explain risk drivers.
+3. Give 3 business recommendations.
+4. Make it professional don't ask any follow up questions just give me the report.
+Keep it concise and executive-level.
+"""
+
+response = ollama.chat(
+    model='gemma3:1b',  # replace with ollama list output
+    messages=[{'role': 'user', 'content': summary_prompt}]
+)
+
+print(response['message']['content'])
