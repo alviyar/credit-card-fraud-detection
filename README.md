@@ -1,6 +1,7 @@
 # Credit Card Fraud Detection
 
-<img width="1300" height="762" alt="image" src="https://github.com/user-attachments/assets/64fbd0ab-47b4-476d-b120-ef34abb5b875" />
+<img width="1265" height="747" alt="image" src="https://github.com/user-attachments/assets/21646c52-c290-4be9-8f81-b2f3212c51a3" />
+
 📌 Overview
 
 An interactive Power BI dashboard analyzing fraud patterns across 10,000 credit card transactions.
