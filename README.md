@@ -1,4 +1,4 @@
-# credit-card-fraud-detection
+# Credit Card Fraud Detection
 
 <img width="1300" height="762" alt="image" src="https://github.com/user-attachments/assets/64fbd0ab-47b4-476d-b120-ef34abb5b875" />
 📌 Overview
@@ -74,9 +74,11 @@ Python – Data preprocessing & feature engineering
 
 SQL – Data analysis & fraud rate calculations
 
-Power BI – Interactive dashboard development
+Power BI – Interactive dashboard development   
 
-💡 Business Recommendations
+Ollama (Gemma LLM) – Automated risk summary generation  
+
+💡 **Business Recommendations**
 
 Strengthen monitoring for foreign and high-velocity transactions
 
@@ -84,10 +86,15 @@ Implement additional verification for low device trust scores
 
 Introduce dynamic risk-based fraud scoring
 
-🚀 Future Improvements
+🚀 **Future Improvements**
 
 Integrate real-time fraud detection
 
 Implement machine learning risk scoring model
 
 Deploy automated alert system
+
+**How to Run**  
+1. Install requirements
+2. Run Python script for EDA
+3. Use Power BI to open .pbix
