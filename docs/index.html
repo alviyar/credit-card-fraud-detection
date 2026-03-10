@@ -5,634 +5,578 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credit Card Fraud Detection</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
 :root {
-  --bg:       #fdfcf8;
-  --lemon:    #f7f06a;
-  --lemon-d:  #d4c800;
-  --mint:     #b2f0d4;
-  --mint-d:   #38c98a;
-  --coral:    #ffb3a3;
-  --coral-d:  #ff5f3f;
-  --sky:      #bde4ff;
-  --sky-d:    #3fa8e8;
-  --lilac:    #dcd0ff;
-  --lilac-d:  #8b5cf6;
-  --peach:    #ffd8a8;
-  --peach-d:  #f59e0b;
-  --ink:      #18162a;
-  --ink2:     #3c3860;
-  --muted:    #7c79a0;
-  --light:    rgba(24,22,42,0.06);
-  --stamp:    4px 5px 0 rgba(24,22,42,0.14);
-  --stamp-lg: 6px 8px 0 rgba(24,22,42,0.14);
+  --bg: #f7f5f2;
+  --bg2: #ffffff;
+  --bg3: #edeae5;
+  --border: rgba(0,0,0,0.09);
+  --border-bright: rgba(0,0,0,0.15);
+  --red: #c8202e;
+  --red-dim: rgba(200,32,46,0.07);
+  --red-mid: rgba(200,32,46,0.16);
+  --green: #1a9940;
+  --green-dim: rgba(26,153,64,0.07);
+  --green-mid: rgba(26,153,64,0.16);
+  --white: #141210;
+  --white-dim: rgba(20,18,16,0.55);
+  --white-faint: rgba(20,18,16,0.35);
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
 }
 
 body {
   background: var(--bg);
-  color: var(--ink);
-  font-family: 'Nunito', sans-serif;
+  color: var(--white);
+  font-family: var(--sans);
   overflow-x: hidden;
 }
 
-/* ─── FLOATING BG BLOBS ─── */
-.blobs {
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
   position: fixed; inset: 0; z-index: 0;
-  pointer-events: none; overflow: hidden;
-}
-.blob {
-  position: absolute; border-radius: 50%;
-  filter: blur(70px); opacity: .38;
-  animation: bfloat ease-in-out infinite;
-}
-.b1{width:500px;height:500px;background:var(--lemon);top:-120px;left:-130px;animation-duration:22s;}
-.b2{width:380px;height:380px;background:var(--mint);bottom:5%;right:-80px;animation-duration:18s;animation-delay:-6s;}
-.b3{width:320px;height:320px;background:var(--coral);top:38%;right:8%;animation-duration:24s;animation-delay:-11s;}
-.b4{width:260px;height:260px;background:var(--sky);bottom:-60px;left:25%;animation-duration:16s;animation-delay:-4s;}
-.b5{width:220px;height:220px;background:var(--lilac);top:18%;left:42%;animation-duration:20s;animation-delay:-9s;}
-@keyframes bfloat{
-  0%,100%{transform:translate(0,0) scale(1);}
-  33%{transform:translate(28px,-36px) scale(1.04);}
-  66%{transform:translate(-18px,22px) scale(.97);}
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.04;
 }
 
-.page { position: relative; z-index: 1; }
-
-/* ─── NAV ─── */
+/* ── NAV ── */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 3rem;
-  background: rgba(253,252,248,.88);
-  backdrop-filter: blur(18px);
-  border-bottom: 2px solid var(--ink);
-  transition: box-shadow .3s;
+  padding: 0 3rem;
+  height: 60px;
+  background: rgba(247,245,242,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.3s;
 }
-nav.up { box-shadow: 0 4px 0 var(--ink); }
+nav.scrolled { border-bottom-color: var(--border-bright); }
+
 .nav-logo {
-  font-family: 'Fraunces', serif;
-  font-size: 1.15rem; font-weight: 900;
-  color: var(--ink); text-decoration: none;
-  display: flex; align-items: center; gap: .5rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--mono); font-size: 0.78rem; font-weight: 500;
+  color: var(--white); text-decoration: none; letter-spacing: 0.04em;
 }
-.nav-logo-badge {
-  background: var(--lemon);
-  border: 2px solid var(--ink);
-  border-radius: 8px;
-  padding: .1rem .5rem;
-  font-size: .7rem; font-weight: 800;
-  color: var(--ink); letter-spacing: .04em;
+.nav-logo-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
+  animation: pulse-red 2s infinite;
 }
-.nav-links { display: flex; gap: 2rem; }
-.nav-links a {
-  font-size: .82rem; font-weight: 700;
-  color: var(--muted); text-decoration: none;
-  letter-spacing: .02em;
-  transition: color .2s;
-}
-.nav-links a:hover { color: var(--ink); }
-.nav-btn {
-  background: var(--ink);
-  color: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 12px;
-  padding: .5rem 1.3rem;
-  font-family: 'Nunito', sans-serif;
-  font-size: .8rem; font-weight: 800;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex; align-items: center; gap: .4rem;
-  transition: all .2s;
-  box-shadow: var(--stamp);
-}
-.nav-btn:hover {
-  transform: translate(-2px,-2px);
-  box-shadow: var(--stamp-lg);
+@keyframes pulse-red {
+  0%,100% { opacity: 1; box-shadow: 0 0 8px var(--red); }
+  50% { opacity: 0.5; box-shadow: 0 0 3px var(--red); }
 }
 
-/* ─── HERO ─── */
+.nav-links { display: flex; gap: 2.5rem; }
+.nav-links a {
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 400;
+  color: var(--white-dim); text-decoration: none; letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+
+.nav-cta {
+  font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+  color: #f7f5f2; background: var(--white);
+  border: none; border-radius: 4px; padding: 0.4rem 1rem;
+  text-decoration: none; letter-spacing: 0.06em;
+  transition: opacity 0.2s; cursor: pointer; display: flex; align-items: center; gap: 0.4rem;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
 .hero {
   min-height: 100vh;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 3rem; align-items: center;
-  padding: 8rem 3rem 4rem;
-  max-width: 1300px; margin: 0 auto;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 8rem 3rem 6rem;
+  max-width: 1200px; margin: 0 auto;
+  position: relative; z-index: 1;
 }
 
-.hero-eyebrow {
-  display: inline-flex; align-items: center; gap: .5rem;
-  background: var(--coral);
-  border: 2px solid var(--ink);
-  border-radius: 100px;
-  padding: .3rem 1rem;
-  font-size: .72rem; font-weight: 800;
-  letter-spacing: .06em; text-transform: uppercase;
-  margin-bottom: 1.6rem;
-  box-shadow: var(--stamp);
-  opacity: 0; animation: popUp .6s .1s forwards;
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 2.5rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid rgba(230,57,70,0.3);
+  border-radius: 3px; background: var(--red-dim);
+  width: fit-content;
 }
-.blink { width: 8px; height: 8px; background: var(--coral-d); border-radius: 50%; border: 2px solid var(--ink); animation: blink 1.4s infinite; }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+.tag-blink { width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: pulse-red 1.4s infinite; }
 
 .hero-title {
-  font-family: 'Fraunces', serif;
-  font-size: clamp(2.8rem, 5.5vw, 5.2rem);
-  font-weight: 900; line-height: 1.04;
-  letter-spacing: -.03em;
-  margin-bottom: 1.5rem;
-  opacity: 0; animation: popUp .65s .25s forwards;
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  font-weight: 800; line-height: 0.95; letter-spacing: -0.04em;
+  margin-bottom: 0.6rem;
 }
-.hero-title .word-fraud {
-  font-style: italic;
-  background: var(--lemon);
-  border-bottom: 4px solid var(--ink);
-  padding: 0 .15em;
-  display: inline;
-}
-.hero-title .word-detect {
-  color: var(--coral-d);
+.hero-title .line2 { color: var(--white-faint); }
+.hero-title .line3 {
+  -webkit-text-stroke: 1px rgba(230,57,70,0.6);
+  color: transparent;
 }
 
+.hero-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 4rem; gap: 3rem; flex-wrap: wrap;
+}
 .hero-desc {
-  font-size: .95rem; line-height: 1.75; color: var(--muted);
-  max-width: 480px; margin-bottom: 2.5rem; font-weight: 600;
-  opacity: 0; animation: popUp .65s .4s forwards;
+  font-family: var(--mono); font-size: 0.82rem; line-height: 1.8;
+  color: var(--white-dim); max-width: 420px; font-weight: 300;
+}
+.hero-desc strong { color: var(--white); font-weight: 500; }
+
+.hero-stats {
+  display: flex; gap: 3rem;
+}
+.hstat {
+  text-align: right;
+}
+.hstat-num {
+  font-size: 2.2rem; font-weight: 800; line-height: 1;
+  margin-bottom: 0.25rem;
+}
+.hstat-num.red { color: var(--red); }
+.hstat-num.green { color: var(--green); }
+.hstat-label {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--white-dim);
 }
 
 .hero-actions {
-  display: flex; gap: 1rem; flex-wrap: wrap;
-  opacity: 0; animation: popUp .65s .55s forwards;
+  display: flex; gap: 1rem; margin-top: 3.5rem; align-items: center;
 }
 .btn-primary {
-  background: var(--ink); color: #fff;
-  border: 2px solid var(--ink); border-radius: 14px;
-  padding: .8rem 2rem;
-  font-family: 'Nunito', sans-serif;
-  font-size: .85rem; font-weight: 800;
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  color: #f7f5f2; background: var(--white);
+  border: none; border-radius: 4px; padding: 0.65rem 1.5rem;
   text-decoration: none; cursor: pointer;
-  box-shadow: var(--stamp); transition: all .2s;
-  display: inline-flex; align-items: center; gap: .4rem;
+  transition: opacity 0.2s;
 }
-.btn-primary:hover { transform: translate(-2px,-2px); box-shadow: var(--stamp-lg); }
-.btn-secondary {
-  background: var(--lemon); color: var(--ink);
-  border: 2px solid var(--ink); border-radius: 14px;
-  padding: .8rem 2rem;
-  font-family: 'Nunito', sans-serif;
-  font-size: .85rem; font-weight: 800;
+.btn-primary:hover { opacity: 0.85; }
+.btn-ghost {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  color: var(--white-dim); background: transparent;
+  border: 1px solid var(--border-bright); border-radius: 4px; padding: 0.65rem 1.5rem;
   text-decoration: none; cursor: pointer;
-  box-shadow: var(--stamp); transition: all .2s;
+  transition: all 0.2s;
 }
-.btn-secondary:hover { transform: translate(-2px,-2px); box-shadow: var(--stamp-lg); }
+.btn-ghost:hover { color: var(--white); border-color: var(--border-bright); background: rgba(255,255,255,0.04); }
 
-/* HERO RIGHT — stat stickers */
-.hero-right {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
-  opacity: 0; animation: popUp .7s .65s forwards;
+/* ── DIVIDER LINE ── */
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 0; position: relative; z-index: 1;
 }
-.sticker {
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 20px;
-  padding: 1.6rem 1.4rem;
-  box-shadow: var(--stamp-lg);
-  transition: transform .25s, box-shadow .25s;
-  cursor: default;
-}
-.sticker:hover {
-  transform: translate(-3px,-4px) rotate(-1deg);
-  box-shadow: 8px 11px 0 rgba(24,22,42,.14);
-}
-.sticker.accent-lemon  { background: var(--lemon); }
-.sticker.accent-mint   { background: var(--mint); }
-.sticker.accent-coral  { background: var(--coral); }
-.sticker.accent-sky    { background: var(--sky); }
-.sticker.accent-lilac  { background: var(--lilac); }
-.sticker.accent-peach  { background: var(--peach); }
-.sticker-icon { font-size: 1.8rem; margin-bottom: .6rem; display: block; }
-.sticker-num {
-  font-family: 'Fraunces', serif;
-  font-size: 2rem; font-weight: 900; line-height: 1;
-  color: var(--ink); margin-bottom: .25rem;
-}
-.sticker-label { font-size: .72rem; font-weight: 700; color: var(--ink2); letter-spacing: .04em; text-transform: uppercase; }
-.sticker.wide { grid-column: span 2; display: flex; align-items: center; gap: 1.2rem; }
-.sticker.wide .sticker-num { font-size: 1.5rem; }
 
-/* ─── WRIGGLY DIVIDER ─── */
-.wiggle-wrap { overflow: hidden; line-height: 0; }
-.wiggle-wrap svg { display: block; width: 100%; }
-
-/* ─── PILL TICKER ─── */
-.ticker-strip {
-  background: var(--ink);
-  padding: .7rem 0;
-  overflow: hidden; white-space: nowrap;
+/* ── TICKER ── */
+.ticker {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0.7rem 0; overflow: hidden;
+  position: relative; z-index: 1;
 }
-.ticker-inner {
+.ticker-track {
   display: inline-flex; gap: 0;
-  animation: tickroll 30s linear infinite;
+  animation: ticker 35s linear infinite;
+  white-space: nowrap;
 }
 .ticker-item {
-  display: inline-flex; align-items: center; gap: 1.4rem;
-  padding: 0 2.5rem;
-  font-size: .7rem; font-weight: 800;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: rgba(255,255,255,.75);
+  display: inline-flex; align-items: center; gap: 1.5rem;
+  padding: 0 2rem;
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(247,245,242,0.5);
 }
-.ticker-dot { width: 5px; height: 5px; background: var(--lemon); border-radius: 50%; }
-@keyframes tickroll { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+.ticker-sep { color: var(--red); opacity: 0.7; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-/* ─── SECTIONS ─── */
+/* ── SECTIONS ── */
 .section {
-  max-width: 1300px; margin: 0 auto;
-  padding: 6rem 3rem;
+  max-width: 1200px; margin: 0 auto;
+  padding: 7rem 3rem;
+  position: relative; z-index: 1;
 }
-.eyebrow {
-  display: inline-flex; align-items: center; gap: .5rem;
-  font-size: .68rem; font-weight: 800;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--ink2);
-  background: var(--mint);
-  border: 2px solid var(--ink);
-  border-radius: 100px; padding: .25rem .9rem;
-  margin-bottom: 1.4rem;
-  box-shadow: 2px 3px 0 rgba(24,22,42,.12);
+
+.sec-label {
+  font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--white-faint); margin-bottom: 1.2rem;
 }
-.eyebrow.coral { background: var(--coral); }
-.eyebrow.sky   { background: var(--sky); }
-.eyebrow.lilac { background: var(--lilac); }
-.eyebrow.peach { background: var(--peach); }
-.eyebrow.lemon { background: var(--lemon); }
+.sec-label span { color: var(--red); }
 
 .sec-title {
-  font-family: 'Fraunces', serif;
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  font-weight: 900; line-height: 1.1;
-  letter-spacing: -.025em;
-  margin-bottom: 1rem; color: var(--ink);
+  font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800;
+  line-height: 1.05; letter-spacing: -0.03em;
+  margin-bottom: 1rem;
 }
 .sec-sub {
-  font-size: .92rem; line-height: 1.75; color: var(--muted);
-  max-width: 540px; margin-bottom: 3rem; font-weight: 600;
+  font-family: var(--mono); font-size: 0.8rem; line-height: 1.8;
+  color: var(--white-dim); max-width: 500px; font-weight: 300;
+  margin-bottom: 4rem;
 }
 
-/* ─── FEATURE CARDS ─── */
+/* ── FEATURE GRID ── */
 .feat-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 1.4rem;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
 }
 .feat-card {
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 20px; padding: 2rem 1.8rem;
-  box-shadow: var(--stamp); transition: all .25s;
-  cursor: default;
+  background: var(--bg2); padding: 2rem 1.8rem;
+  border-right: 1px solid var(--border);
+  transition: background 0.25s;
 }
-.feat-card:nth-child(1){ background: var(--lemon); }
-.feat-card:nth-child(2){ background: var(--mint); }
-.feat-card:nth-child(3){ background: var(--sky); }
-.feat-card:nth-child(4){ background: var(--lilac); }
-.feat-card:hover { transform: translate(-3px,-4px); box-shadow: var(--stamp-lg); }
-.feat-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
-.feat-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; margin-bottom: .6rem; }
-.feat-body { font-size: .78rem; line-height: 1.7; color: var(--ink2); font-weight: 600; }
+.feat-card:last-child { border-right: none; }
+.feat-card:hover { background: var(--bg3); }
 
-/* ─── TECH PILLS ─── */
-.pill-wrap { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 3rem; }
-.tpill {
-  border: 2px solid var(--ink); border-radius: 100px;
-  padding: .35rem 1rem; font-size: .72rem; font-weight: 800;
-  box-shadow: 2px 3px 0 rgba(24,22,42,.1);
-  transition: transform .2s, box-shadow .2s; cursor: default;
+.feat-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; margin-bottom: 1.2rem;
 }
-.tpill:hover { transform: translate(-1px,-2px); box-shadow: 3px 5px 0 rgba(24,22,42,.14); }
-.tp-y { background: var(--lemon); }
-.tp-m { background: var(--mint); }
-.tp-c { background: var(--coral); }
-.tp-s { background: var(--sky); }
-.tp-l { background: var(--lilac); }
-.tp-p { background: var(--peach); }
+.feat-icon.red { background: var(--red-dim); border: 1px solid rgba(230,57,70,0.2); }
+.feat-icon.green { background: var(--green-dim); border: 1px solid rgba(45,198,83,0.15); }
 
-/* ─── DASHBOARD SHELL ─── */
-.dash-shell {
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: var(--stamp-lg);
+.feat-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.7rem; }
+.feat-body {
+  font-family: var(--mono); font-size: 0.72rem; line-height: 1.7;
+  color: var(--white-dim); font-weight: 300;
 }
-.dash-header {
-  background: var(--lemon);
-  border-bottom: 2px solid var(--ink);
-  padding: 1.2rem 2rem;
+
+/* ── DASHBOARD IMAGE SECTION ── */
+#dashboard { border-top: 1px solid var(--border); }
+
+.dash-top {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 3rem; gap: 2rem; flex-wrap: wrap;
+}
+.dash-kpis {
+  display: flex; gap: 0;
+  border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+}
+.dkpi {
+  padding: 1.2rem 1.8rem; border-right: 1px solid var(--border);
+  background: var(--bg2); min-width: 120px;
+}
+.dkpi:last-child { border-right: none; }
+.dkpi-val {
+  font-size: 1.5rem; font-weight: 800; line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.dkpi-val.red { color: var(--red); }
+.dkpi-val.green { color: var(--green); }
+.dkpi-lbl {
+  font-family: var(--mono); font-size: 0.58rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--white-faint);
+}
+
+/* Dashboard image container */
+.dash-img-wrap {
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  background: var(--bg2); position: relative;
+}
+.dash-img-header {
+  padding: 0.9rem 1.4rem;
+  border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg3);
 }
-.dash-header-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1rem; font-weight: 900;
-  color: var(--ink);
-  display: flex; align-items: center; gap: .6rem;
+.dash-img-title {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--white-dim);
+  display: flex; align-items: center; gap: 0.6rem;
 }
-.dash-live {
-  display: flex; align-items: center; gap: .4rem;
-  font-size: .65rem; font-weight: 800; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--ink2);
-  background: rgba(255,255,255,.6);
-  border: 2px solid var(--ink); border-radius: 100px;
-  padding: .2rem .7rem;
+.dash-live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 6px var(--green); animation: pulse-red 2s infinite;
+  animation-name: pulse-green;
 }
-.dash-dot { width: 7px; height: 7px; background: var(--coral-d); border-radius: 50%; border: 1.5px solid var(--ink); animation: blink 1.4s infinite; }
-
-/* KPI ROW */
-.kpi-band {
-  display: grid; grid-template-columns: repeat(4,1fr);
-  border-bottom: 2px solid var(--ink);
-}
-.kpi-box {
-  padding: 1.6rem 1.8rem;
-  border-right: 2px solid var(--ink);
-  transition: background .2s;
-}
-.kpi-box:last-child { border-right: none; }
-.kpi-box:hover { background: var(--lemon); }
-.kpi-box:nth-child(2):hover { background: var(--mint); }
-.kpi-box:nth-child(3):hover { background: var(--coral); }
-.kpi-box:nth-child(4):hover { background: var(--sky); }
-.kpi-lbl { font-size: .62rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
-.kpi-val { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 900; color: var(--ink); line-height: 1; margin-bottom: .3rem; }
-.kpi-badge {
-  display: inline-flex; align-items: center; gap: .2rem;
-  font-size: .62rem; font-weight: 800; padding: .15rem .55rem;
-  border: 1.5px solid var(--ink); border-radius: 100px;
-}
-.kb-red  { background: var(--coral); }
-.kb-grn  { background: var(--mint); }
-.kb-yel  { background: var(--lemon); }
-
-/* CHART AREA */
-.chart-zone {
-  display: grid; grid-template-columns: 3fr 2fr;
-  border-bottom: 2px solid var(--ink);
-}
-.cpanel { padding: 1.8rem 2rem; }
-.cpanel + .cpanel { border-left: 2px solid var(--ink); }
-.cpanel-lbl {
-  font-size: .65rem; font-weight: 800; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 1.2rem;
-  display: flex; align-items: center; gap: .5rem;
-}
-.cpanel-lbl-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  border: 2px solid var(--ink);
-}
-.ch240 { height: 240px; position: relative; }
-.ch180 { height: 180px; position: relative; }
-
-/* BOTTOM ROW */
-.bot-zone {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-}
-.bpanel { padding: 1.8rem 2rem; border-right: 2px solid var(--ink); }
-.bpanel:last-child { border-right: none; }
-
-/* Progress bars */
-.prog-stack { display: flex; flex-direction: column; gap: 1rem; }
-.prog-lbl-row { display: flex; justify-content: space-between; margin-bottom: .35rem; font-size: .72rem; font-weight: 700; color: var(--ink2); }
-.prog-track { height: 10px; background: var(--light); border-radius: 100px; border: 1.5px solid var(--ink); overflow: hidden; }
-.prog-bar { height: 100%; border-radius: 100px; width: 0; transition: width 1.5s cubic-bezier(.22,1,.36,1); }
-.pb-coral  { background: var(--coral-d); }
-.pb-mint   { background: var(--mint-d); }
-.pb-sky    { background: var(--sky-d); }
-.pb-lilac  { background: var(--lilac-d); }
-.pb-peach  { background: var(--peach-d); }
-
-/* Data table */
-.dtbl { width: 100%; border-collapse: collapse; }
-.dtbl th { font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-bottom: .6rem; border-bottom: 2px solid var(--ink); text-align: left; }
-.dtbl td { font-size: .77rem; font-weight: 600; color: var(--ink); padding: .55rem 0; border-bottom: 1.5px solid var(--light); }
-.dtbl tr:hover td { color: var(--coral-d); }
-.chip { display: inline-block; padding: .12rem .55rem; border-radius: 100px; font-size: .6rem; font-weight: 800; border: 1.5px solid var(--ink); }
-.chip-hi   { background: var(--coral); }
-.chip-mid  { background: var(--peach); }
-.chip-low  { background: var(--mint); }
-
-/* Donut legend */
-.dlegend { display: flex; flex-direction: column; gap: .6rem; margin-top: .8rem; }
-.dleg-row { display: flex; align-items: center; justify-content: space-between; font-size: .74rem; font-weight: 700; }
-.dleg-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); margin-right: .5rem; flex-shrink: 0; }
-.dleg-left { display: flex; align-items: center; color: var(--ink2); }
-
-/* ─── FILTER ROW ─── */
-.filter-row { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 2rem; }
-.fbtn {
-  background: #fff; border: 2px solid var(--ink); border-radius: 100px;
-  padding: .35rem 1rem; font-family: 'Nunito', sans-serif;
-  font-size: .72rem; font-weight: 800; cursor: pointer;
-  box-shadow: 2px 3px 0 rgba(24,22,42,.1);
-  transition: all .2s;
-}
-.fbtn.on, .fbtn:hover {
-  background: var(--ink); color: #fff;
-  transform: translate(-1px,-2px); box-shadow: 3px 5px 0 rgba(24,22,42,.2);
+@keyframes pulse-green {
+  0%,100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+  50% { opacity: 0.4; box-shadow: 0 0 2px var(--green); }
 }
 
-/* ─── AI SUMMARY BOX ─── */
-.ai-box {
-  background: var(--lilac);
-  border: 2px solid var(--ink);
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: var(--stamp-lg);
+/* ── IMAGE PLACEHOLDER ── */
+.img-placeholder {
+  width: 100%; aspect-ratio: 16/9;
+  background: var(--bg3);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1rem; cursor: pointer;
+  transition: background 0.2s;
   position: relative; overflow: hidden;
 }
-.ai-box::before {
-  content: '✦';
-  position: absolute; right: 2rem; top: 1.5rem;
-  font-size: 3rem; opacity: .15; color: var(--ink);
+.img-placeholder::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(200,32,46,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,32,46,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.img-placeholder:hover { background: #1a1a1a; }
+
+.placeholder-icon {
+  width: 56px; height: 56px; border-radius: 10px;
+  border: 1px solid var(--border-bright);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg2); font-size: 1.5rem;
+  position: relative; z-index: 1;
+}
+.placeholder-text {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  color: var(--white-faint); text-align: center; line-height: 1.6;
+  position: relative; z-index: 1;
+}
+.placeholder-text strong {
+  display: block; font-size: 0.8rem; color: var(--white-dim);
+  margin-bottom: 0.3rem; font-weight: 500;
+}
+.placeholder-upload-btn {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  color: var(--bg); background: var(--white);
+  border: none; border-radius: 4px; padding: 0.45rem 1.2rem;
+  cursor: pointer; position: relative; z-index: 1;
+  text-transform: uppercase; transition: opacity 0.2s;
+}
+.placeholder-upload-btn:hover { opacity: 0.8; }
+
+/* Hidden actual dashboard image (shown after upload) */
+.dash-img {
+  width: 100%; display: block;
+}
+
+/* ── AI SECTION ── */
+#ai-section { border-top: 1px solid var(--border); }
+
+.ai-wrap {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  margin-top: 3rem;
+}
+.ai-main {
+  background: var(--bg2); padding: 2.5rem;
+  border-right: 1px solid var(--border);
 }
 .ai-badge {
-  display: inline-flex; align-items: center; gap: .4rem;
-  background: var(--ink); color: #fff;
-  border-radius: 100px; padding: .25rem .9rem;
-  font-size: .65rem; font-weight: 800; letter-spacing: .1em;
-  text-transform: uppercase; margin-bottom: 1.2rem;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--green);
+  border: 1px solid rgba(45,198,83,0.25); border-radius: 3px;
+  padding: 0.2rem 0.65rem; background: var(--green-dim);
+  margin-bottom: 1.5rem;
 }
-.ai-text { font-size: .88rem; line-height: 1.8; color: var(--ink2); font-weight: 600; }
-.ai-text strong { color: var(--ink); }
-.ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
-.ai-point {
-  background: rgba(255,255,255,.55); border: 2px solid var(--ink);
-  border-radius: 14px; padding: 1.2rem 1.4rem;
-  font-size: .8rem; font-weight: 700; color: var(--ink2);
-  line-height: 1.6;
+.ai-text {
+  font-family: var(--mono); font-size: 0.8rem; line-height: 1.9;
+  color: var(--white-dim); font-weight: 300;
 }
-.ai-point span { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 900; color: var(--ink); display: block; margin-bottom: .3rem; }
+.ai-text strong { color: var(--white); font-weight: 500; }
+.ai-text .fraud-num { color: var(--red); font-weight: 500; }
+.ai-text .safe-num { color: var(--green); font-weight: 500; }
 
-/* ─── INSIGHTS ─── */
-.ins-bento {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 1.4rem;
+.ai-points { background: var(--bg3); padding: 2rem; display: flex; flex-direction: column; gap: 1px; }
+.ai-point {
+  background: var(--bg2); padding: 1.4rem;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+.ai-point:hover.red-border { border-left-color: var(--red); }
+.ai-point:hover.green-border { border-left-color: var(--green); }
+.ai-point.red-border { border-left-color: rgba(230,57,70,0.35); }
+.ai-point.green-border { border-left-color: rgba(45,198,83,0.35); }
+
+.ai-point-title {
+  font-size: 0.78rem; font-weight: 700; margin-bottom: 0.4rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.ai-point-title .dot { width: 5px; height: 5px; border-radius: 50%; }
+.dot-red { background: var(--red); }
+.dot-green { background: var(--green); }
+.ai-point-body {
+  font-family: var(--mono); font-size: 0.7rem; line-height: 1.7;
+  color: var(--white-dim); font-weight: 300;
+}
+
+/* ── INSIGHTS ── */
+#insights { border-top: 1px solid var(--border); }
+
+.ins-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  margin-top: 3rem;
 }
 .ins-card {
-  background: #fff; border: 2px solid var(--ink);
-  border-radius: 20px; padding: 2rem;
-  box-shadow: var(--stamp); transition: all .25s;
-  cursor: default;
+  background: var(--bg2); padding: 2.2rem 2rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
 }
-.ins-card:hover { transform: translate(-2px,-3px); box-shadow: var(--stamp-lg); }
-.ins-card.bg-lemon  { background: var(--lemon); }
-.ins-card.bg-mint   { background: var(--mint); }
-.ins-card.bg-coral  { background: var(--coral); }
-.ins-card.bg-sky    { background: var(--sky); }
-.ins-card.bg-lilac  { background: var(--lilac); }
-.ins-card.bg-peach  { background: var(--peach); }
+.ins-card:hover { background: var(--bg3); }
 .ins-card.span2 { grid-column: span 2; }
-.ins-num { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 900; color: var(--ink); line-height: 1; margin-bottom: .5rem; }
-.ins-label { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); margin-bottom: .6rem; }
-.ins-desc { font-size: .8rem; font-weight: 600; line-height: 1.65; color: var(--ink2); }
-.ins-icon { font-size: 2.4rem; margin-bottom: .8rem; display: block; }
+.ins-card.no-border-r { border-right: none; }
+.ins-card.no-border-b { border-bottom: none; }
 
-/* ─── CODE ─── */
-.code-card {
-  background: #1e1b2e; border: 2px solid var(--ink);
-  border-radius: 20px; overflow: hidden;
-  box-shadow: var(--stamp-lg);
+.ins-num {
+  font-size: 3rem; font-weight: 800; line-height: 1;
+  margin-bottom: 0.5rem; letter-spacing: -0.03em;
+}
+.ins-num.red { color: var(--red); }
+.ins-num.green { color: var(--green); }
+
+.ins-label {
+  font-family: var(--mono); font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--white-faint); margin-bottom: 0.7rem;
+}
+.ins-desc {
+  font-family: var(--mono); font-size: 0.72rem; line-height: 1.7;
+  color: var(--white-dim); font-weight: 300;
+}
+.ins-tag {
+  display: inline-block; margin-top: 1rem;
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+}
+.ins-tag.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(230,57,70,0.2); }
+.ins-tag.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(45,198,83,0.15); }
+
+/* ── CODE SECTION ── */
+.code-section { border-top: 1px solid var(--border); }
+
+.code-wrap {
+  border: 1px solid var(--border); border-radius: 8px;
+  overflow: hidden; margin-top: 3rem;
 }
 .code-bar {
-  background: #2c2845; border-bottom: 2px solid var(--ink);
-  padding: .9rem 1.5rem; display: flex; align-items: center; gap: .5rem;
+  background: var(--bg3); padding: 0.8rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.5rem;
 }
-.cbt { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.2); }
-.cbt:nth-child(1){ background: var(--coral); }
-.cbt:nth-child(2){ background: var(--lemon); }
-.cbt:nth-child(3){ background: var(--mint); }
-.code-fname { font-family: 'Nunito', monospace; font-size: .7rem; font-weight: 700; color: rgba(255,255,255,.4); margin-left: .8rem; }
+.cb { width: 10px; height: 10px; border-radius: 50%; }
+.cb1 { background: var(--red); opacity: 0.7; }
+.cb2 { background: #f59e0b; opacity: 0.7; }
+.cb3 { background: var(--green); opacity: 0.7; }
+.code-fname {
+  font-family: var(--mono); font-size: 0.65rem;
+  color: var(--white-faint); margin-left: 0.8rem;
+  letter-spacing: 0.06em;
+}
 pre {
-  padding: 2rem; font-family: 'Courier New', monospace;
-  font-size: .78rem; line-height: 1.9; color: #d4d0f0;
+  background: #1e1c18; padding: 2rem;
+  font-family: var(--mono); font-size: 0.74rem;
+  line-height: 2; color: rgba(240,237,232,0.55);
   overflow-x: auto;
 }
-.ck  { color: #f4a7b0; font-weight: bold; }
-.cf  { color: #a8d8ea; }
-.cs  { color: #f7f06a; }
-.cc  { color: #5c5880; font-style: italic; }
-.cn  { color: #b2f0d4; }
+.ck { color: rgba(210,70,80,0.95); }
+.cf { color: rgba(50,190,100,0.9); }
+.cs { color: rgba(240,220,130,0.85); }
+.cc { color: rgba(240,237,232,0.3); font-style: italic; }
+.cn { color: rgba(100,180,240,0.85); }
 
-/* ─── FOOTER ─── */
+/* ── FOOTER ── */
 footer {
-  background: var(--ink);
-  padding: 2.5rem 3rem;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 2rem 3rem;
   display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
 }
-.foot-brand {
-  font-family: 'Fraunces', serif;
-  font-size: 1rem; font-weight: 900;
-  color: #fff; display: flex; align-items: center; gap: .6rem;
+.foot-logo {
+  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em;
+  color: rgba(247,245,242,0.6);
 }
-.foot-brand-dot {
-  width: 10px; height: 10px; background: var(--lemon);
-  border-radius: 50%; border: 2px solid rgba(255,255,255,.3);
-}
+.foot-logo span { color: var(--red); }
 .foot-links { display: flex; gap: 2rem; }
-.foot-links a { color: rgba(255,255,255,.4); text-decoration: none; font-size: .76rem; font-weight: 700; transition: color .2s; }
-.foot-links a:hover { color: var(--lemon); }
+.foot-links a {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em;
+  color: rgba(247,245,242,0.4); text-decoration: none; transition: color 0.2s;
+}
+.foot-links a:hover { color: rgba(247,245,242,0.85); }
 
-/* ─── ANIMATIONS ─── */
-@keyframes popUp {
-  from { opacity:0; transform:translateY(22px) scale(.97); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
-}
+/* ── REVEAL ANIMATIONS ── */
 .reveal {
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .75s ease, transform .75s ease;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
-.reveal.show { opacity:1; transform:translateY(0); }
-.rd1 { transition-delay: .1s; }
-.rd2 { transition-delay: .2s; }
-.rd3 { transition-delay: .3s; }
+.reveal.show { opacity: 1; transform: translateY(0); }
+.rd1 { transition-delay: 0.1s; }
+.rd2 { transition-delay: 0.2s; }
+.rd3 { transition-delay: 0.3s; }
+
+/* ── HERO ANIMATION ── */
+.h-fade {
+  opacity: 0; transform: translateY(16px);
+  animation: hfade 0.7s forwards;
+}
+.h1 { animation-delay: 0.05s; }
+.h2 { animation-delay: 0.15s; }
+.h3 { animation-delay: 0.25s; }
+.h4 { animation-delay: 0.4s; }
+.h5 { animation-delay: 0.55s; }
+@keyframes hfade {
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
 
-<!-- BLOBS -->
-<div class="blobs">
-  <div class="blob b1"></div><div class="blob b2"></div>
-  <div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div>
-</div>
-
-<div class="page">
-
 <!-- NAV -->
 <nav id="nav">
   <a class="nav-logo" href="#">
-    <span class="nav-logo-badge">ML</span>
-    Fraud Detection
+    <span class="nav-logo-dot"></span>
+    FRAUD_DETECTION.ML
   </a>
   <div class="nav-links">
-    <a href="#overview">Overview</a>
-    <a href="#dashboard">Dashboard</a>
-    <a href="#ai-section">AI Summary</a>
-    <a href="#insights">Insights</a>
+    <a href="#overview">overview</a>
+    <a href="#dashboard">dashboard</a>
+    <a href="#ai-section">ai report</a>
+    <a href="#insights">insights</a>
   </div>
-  <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank" class="nav-btn">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-    View on GitHub
+  <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank" class="nav-cta">
+    ↗ GitHub
   </a>
 </nav>
 
 <!-- HERO -->
-<section id="overview">
-  <div class="hero">
-    <div class="hero-left">
-      <div class="hero-eyebrow"><span class="blink"></span> Live · 10K Transactions Analyzed</div>
-      <h1 class="hero-title">
-        Credit Card<br>
-        <span class="word-fraud">Fraud</span><br>
-        <span class="word-detect">Detection</span>
-      </h1>
-      <p class="hero-desc">
-        An interactive Power BI dashboard identifying fraud patterns across 10,000 transactions — powered by Python, SQL, and an LLM-generated risk summary via Ollama.
-      </p>
-      <div class="hero-actions">
-        <a href="#dashboard" class="btn-primary">↓ Explore Dashboard</a>
-        <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank" class="btn-secondary">GitHub Repo →</a>
+<section>
+  <div class="hero" id="overview">
+    <div class="hero-tag h-fade h1"><span class="tag-blink"></span> Live · 10K Transactions</div>
+    <h1 class="hero-title">
+      <div class="h-fade h2">Credit Card</div>
+      <div class="h-fade h3 line2">Fraud</div>
+      <div class="h-fade h3 line3">Detection</div>
+    </h1>
+    <div class="hero-bottom">
+      <div class="h-fade h4">
+        <p class="hero-desc">
+          An end-to-end fraud intelligence pipeline analyzing <strong>10,000 transactions</strong> — powered by Python, SQL, Power BI, and an LLM-generated risk summary via <strong>Ollama + Gemma</strong>.
+        </p>
+        <div class="hero-actions">
+          <a href="#dashboard" class="btn-primary">View Dashboard ↓</a>
+          <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank" class="btn-ghost">GitHub Repo →</a>
+        </div>
       </div>
-    </div>
-
-    <div class="hero-right">
-      <div class="sticker accent-lemon">
-        <span class="sticker-icon">🔟</span>
-        <div class="sticker-num" data-count="10000">0</div>
-        <div class="sticker-label">Transactions</div>
-      </div>
-      <div class="sticker accent-coral">
-        <span class="sticker-icon">🚨</span>
-        <div class="sticker-num" data-count="151">0</div>
-        <div class="sticker-label">Fraud Cases</div>
-      </div>
-      <div class="sticker accent-mint">
-        <span class="sticker-icon">📉</span>
-        <div class="sticker-num">1.51%</div>
-        <div class="sticker-label">Fraud Rate</div>
-      </div>
-      <div class="sticker accent-sky">
-        <span class="sticker-icon">💸</span>
-        <div class="sticker-num">₹32.6K</div>
-        <div class="sticker-label">Fraud Amount</div>
-      </div>
-      <div class="sticker wide accent-lilac">
-        <span class="sticker-icon">🤖</span>
-        <div>
-          <div class="sticker-num">Ollama · Gemma LLM</div>
-          <div class="sticker-label">AI-Generated Risk Summaries</div>
+      <div class="hero-stats h-fade h5">
+        <div class="hstat">
+          <div class="hstat-num red">151</div>
+          <div class="hstat-label">Fraud Cases</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num red">1.51%</div>
+          <div class="hstat-label">Fraud Rate</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num green">98.49%</div>
+          <div class="hstat-label">Clean Txns</div>
         </div>
       </div>
     </div>
@@ -640,245 +584,185 @@ footer {
 </section>
 
 <!-- TICKER -->
-<div class="ticker-strip">
-  <div class="ticker-inner" id="ticker">
-    <div class="ticker-item"><span class="ticker-dot"></span>Python<span class="ticker-dot"></span>SQL<span class="ticker-dot"></span>Power BI<span class="ticker-dot"></span>Ollama · Gemma LLM<span class="ticker-dot"></span>Fraud Detection<span class="ticker-dot"></span>Risk Analysis<span class="ticker-dot"></span>Device Trust<span class="ticker-dot"></span>Transaction Velocity<span class="ticker-dot"></span>Merchant Categories<span class="ticker-dot"></span>Feature Engineering<span class="ticker-dot"></span>Domestic vs Foreign</div>
-    <div class="ticker-item"><span class="ticker-dot"></span>Python<span class="ticker-dot"></span>SQL<span class="ticker-dot"></span>Power BI<span class="ticker-dot"></span>Ollama · Gemma LLM<span class="ticker-dot"></span>Fraud Detection<span class="ticker-dot"></span>Risk Analysis<span class="ticker-dot"></span>Device Trust<span class="ticker-dot"></span>Transaction Velocity<span class="ticker-dot"></span>Merchant Categories<span class="ticker-dot"></span>Feature Engineering<span class="ticker-dot"></span>Domestic vs Foreign</div>
+<div class="ticker">
+  <div class="ticker-track" id="tt">
+    <div class="ticker-item">Python <span class="ticker-sep">·</span> PostgreSQL <span class="ticker-sep">·</span> Power BI <span class="ticker-sep">·</span> DAX <span class="ticker-sep">·</span> Ollama <span class="ticker-sep">·</span> Gemma LLM <span class="ticker-sep">·</span> Fraud Detection <span class="ticker-sep">·</span> Risk Scoring <span class="ticker-sep">·</span> Device Trust <span class="ticker-sep">·</span> Transaction Velocity <span class="ticker-sep">·</span> Feature Engineering <span class="ticker-sep">·</span> Merchant Categories <span class="ticker-sep">·</span> Foreign vs Domestic</div>
+    <div class="ticker-item">Python <span class="ticker-sep">·</span> PostgreSQL <span class="ticker-sep">·</span> Power BI <span class="ticker-sep">·</span> DAX <span class="ticker-sep">·</span> Ollama <span class="ticker-sep">·</span> Gemma LLM <span class="ticker-sep">·</span> Fraud Detection <span class="ticker-sep">·</span> Risk Scoring <span class="ticker-sep">·</span> Device Trust <span class="ticker-sep">·</span> Transaction Velocity <span class="ticker-sep">·</span> Feature Engineering <span class="ticker-sep">·</span> Merchant Categories <span class="ticker-sep">·</span> Foreign vs Domestic</div>
   </div>
 </div>
 
-<!-- OVERVIEW -->
-<section class="section" id="overview2">
+<!-- OVERVIEW / FEATURES -->
+<section class="section">
   <div class="reveal">
-    <div class="eyebrow">✦ 01 · What Was Built</div>
-    <h2 class="sec-title">End-to-end fraud<br>detection pipeline</h2>
-    <p class="sec-sub">From raw transaction CSV to an AI-powered Power BI dashboard — with Python preprocessing, SQL analytics, and a live Gemma LLM risk report.</p>
-    <div class="pill-wrap">
-      <div class="tpill tp-y">Python</div>
-      <div class="tpill tp-m">PostgreSQL · SQL</div>
-      <div class="tpill tp-c">Power BI · DAX</div>
-      <div class="tpill tp-s">Ollama · Gemma</div>
-      <div class="tpill tp-l">Fraud Risk Scoring</div>
-      <div class="tpill tp-p">Feature Engineering</div>
-    </div>
+    <div class="sec-label"><span>01</span> — what was built</div>
+    <h2 class="sec-title">End-to-end detection<br>pipeline</h2>
+    <p class="sec-sub">From raw CSV to AI-powered dashboard — preprocessing, SQL analytics, Power BI visualization, and local LLM risk reporting.</p>
   </div>
   <div class="feat-grid reveal rd1">
     <div class="feat-card">
-      <span class="feat-icon">🐍</span>
+      <div class="feat-icon red">🐍</div>
       <div class="feat-title">Python Pipeline</div>
-      <div class="feat-body">Data preprocessing and feature engineering on 10K transaction records — velocity scoring, device trust flags, and category risk labeling.</div>
+      <div class="feat-body">Data preprocessing and feature engineering on 10K records — velocity scoring, device trust flags, and category risk labeling.</div>
     </div>
     <div class="feat-card">
-      <span class="feat-icon">🗄️</span>
+      <div class="feat-icon red">🗄️</div>
       <div class="feat-title">SQL Analytics</div>
-      <div class="feat-body">Fraud rate calculations by segment, merchant category, transaction origin, and velocity bucket — surfacing the highest-risk patterns.</div>
+      <div class="feat-body">Fraud rate calculations by segment, merchant category, transaction origin, and velocity bucket — surfacing highest-risk patterns.</div>
     </div>
     <div class="feat-card">
-      <span class="feat-icon">📊</span>
+      <div class="feat-icon green">📊</div>
       <div class="feat-title">Power BI Dashboard</div>
-      <div class="feat-body">Interactive risk matrix, 5 dashboard views — foreign vs domestic, merchant analysis, velocity risk, device trust, and segment comparison.</div>
+      <div class="feat-body">Interactive risk matrix across 5 views — foreign vs domestic, merchant analysis, velocity risk, device trust, and segment comparison.</div>
     </div>
     <div class="feat-card">
-      <span class="feat-icon">🤖</span>
+      <div class="feat-icon green">🤖</div>
       <div class="feat-title">LLM Risk Reports</div>
-      <div class="feat-body">Ollama running the Gemma model generates executive-level fraud summaries — pattern detection, risk drivers, and business recommendations, automatically.</div>
+      <div class="feat-body">Ollama running Gemma generates executive-level fraud summaries — pattern detection, risk drivers, and business recommendations.</div>
     </div>
   </div>
 </section>
-
-<!-- WAVY DIVIDER -->
-<div class="wiggle-wrap" style="margin:0 3rem;">
-  <svg viewBox="0 0 1200 24" preserveAspectRatio="none" style="height:24px;">
-    <path d="M0,12 C100,0 200,24 300,12 C400,0 500,24 600,12 C700,0 800,24 900,12 C1000,0 1100,24 1200,12" fill="none" stroke="rgba(24,22,42,0.12)" stroke-width="2"/>
-  </svg>
-</div>
 
 <!-- DASHBOARD -->
 <section class="section" id="dashboard">
   <div class="reveal">
-    <div class="eyebrow coral">📈 02 · Interactive Dashboard</div>
+    <div class="sec-label"><span>02</span> — interactive dashboard</div>
     <h2 class="sec-title">Fraud metrics,<br>all in one view</h2>
-    <p class="sec-sub">Reconstructed from project findings — explore fraud distribution, risk categories, and transaction patterns.</p>
-    <div class="filter-row" id="filter-row">
-      <button class="fbtn on" data-f="all">All Transactions</button>
-      <button class="fbtn" data-f="foreign">Foreign</button>
-      <button class="fbtn" data-f="domestic">Domestic</button>
-      <button class="fbtn" data-f="highvel">High Velocity</button>
+    <p class="sec-sub">Power BI dashboard covering fraud distribution, risk categories, velocity patterns, and merchant analysis.</p>
+  </div>
+  <div class="dash-top reveal rd1">
+    <div></div>
+    <div class="dash-kpis">
+      <div class="dkpi">
+        <div class="dkpi-val">10,000</div>
+        <div class="dkpi-lbl">Transactions</div>
+      </div>
+      <div class="dkpi">
+        <div class="dkpi-val red">151</div>
+        <div class="dkpi-lbl">Fraud Cases</div>
+      </div>
+      <div class="dkpi">
+        <div class="dkpi-val red">1.51%</div>
+        <div class="dkpi-lbl">Fraud Rate</div>
+      </div>
+      <div class="dkpi">
+        <div class="dkpi-val red">₹32.6K</div>
+        <div class="dkpi-lbl">Fraud Amount</div>
+      </div>
+      <div class="dkpi">
+        <div class="dkpi-val green">₹12.4M</div>
+        <div class="dkpi-lbl">Total Volume</div>
+      </div>
     </div>
   </div>
 
-  <div class="dash-shell reveal rd1">
-    <!-- HEADER -->
-    <div class="dash-header">
-      <div class="dash-header-title">💳 Credit Card Fraud Detection · Overview</div>
-      <div class="dash-live"><span class="dash-dot"></span> 10,000 Records</div>
+  <div class="dash-img-wrap reveal rd2">
+    <div class="dash-img-header">
+      <div class="dash-img-title">
+        <span class="dash-live-dot"></span>
+        credit card fraud detection · power bi dashboard
+      </div>
+      <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;color:var(--white-faint);">10,000 RECORDS · 151 FRAUD</div>
     </div>
-
-    <!-- KPIs -->
-    <div class="kpi-band">
-      <div class="kpi-box">
-        <div class="kpi-lbl">Total Transactions</div>
-        <div class="kpi-val">10,000</div>
-        <span class="kpi-badge kb-yel">100% Processed</span>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-lbl">Fraud Cases</div>
-        <div class="kpi-val">151</div>
-        <span class="kpi-badge kb-red">↑ High Alert</span>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-lbl">Fraud Rate</div>
-        <div class="kpi-val">1.51%</div>
-        <span class="kpi-badge kb-red">Above Threshold</span>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-lbl">Fraud Amount</div>
-        <div class="kpi-val">₹32.6K</div>
-        <span class="kpi-badge kb-grn">Tracked</span>
-      </div>
-    </div>
-
-    <!-- CHARTS -->
-    <div class="chart-zone">
-      <div class="cpanel">
-        <div class="cpanel-lbl"><span class="cpanel-lbl-dot" style="background:var(--coral);"></span> Fraud Amount by Merchant Category</div>
-        <div class="ch240"><canvas id="c-bar"></canvas></div>
-      </div>
-      <div class="cpanel">
-        <div class="cpanel-lbl"><span class="cpanel-lbl-dot" style="background:var(--mint);"></span> Risk Distribution</div>
-        <div style="height:160px;width:160px;margin:0 auto;">
-          <canvas id="c-donut"></canvas>
-        </div>
-        <div class="dlegend" id="dleg"></div>
-      </div>
-    </div>
-
-    <!-- BOTTOM -->
-    <div class="bot-zone">
-      <div class="bpanel">
-        <div class="cpanel-lbl"><span class="cpanel-lbl-dot" style="background:var(--sky);"></span> Fraud Rate by Segment</div>
-        <div class="dtbl-wrap">
-          <table class="dtbl">
-            <thead><tr><th>Segment</th><th>Rate</th><th>Risk</th></tr></thead>
-            <tbody id="seg-tb"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="bpanel">
-        <div class="cpanel-lbl"><span class="cpanel-lbl-dot" style="background:var(--lilac);"></span> Device Trust vs Fraud</div>
-        <div class="prog-stack" id="dev-progs"></div>
-      </div>
-      <div class="bpanel">
-        <div class="cpanel-lbl"><span class="cpanel-lbl-dot" style="background:var(--peach);"></span> Velocity Risk Breakdown</div>
-        <div class="ch240"><canvas id="c-vel"></canvas></div>
-      </div>
-    </div>
+    <!-- IMAGE PLACEHOLDER — replace src with your dashboard image -->
+         <img class="dash-img" src="fraud.png" alt="Power BI Fraud Detection Dashboard">
   </div>
 </section>
-
-<div class="wiggle-wrap" style="margin:0 3rem;">
-  <svg viewBox="0 0 1200 24" preserveAspectRatio="none" style="height:24px;">
-    <path d="M0,12 C150,24 300,0 450,12 C600,24 750,0 900,12 C1050,24 1150,0 1200,12" fill="none" stroke="rgba(24,22,42,0.1)" stroke-width="2"/>
-  </svg>
-</div>
 
 <!-- AI SECTION -->
 <section class="section" id="ai-section">
   <div class="reveal">
-    <div class="eyebrow lilac">🤖 03 · AI-Powered Risk Summary</div>
+    <div class="sec-label"><span>03</span> — ai-powered risk summary</div>
     <h2 class="sec-title">Gemma LLM generates<br>executive reports</h2>
     <p class="sec-sub">Ollama runs a local Gemma model that reads computed fraud metrics and auto-generates a structured risk summary — no manual reporting needed.</p>
   </div>
-  <div class="ai-box reveal rd1">
-    <div class="ai-badge">✦ AI-Generated Report · Gemma via Ollama</div>
-    <p class="ai-text">
-      Based on analysis of <strong>10,000 transactions</strong>, the model identified <strong>151 confirmed fraud cases</strong> totaling <strong>₹32,640</strong> in losses. Foreign transactions exhibit a fraud rate <strong>3.2× higher</strong> than domestic. High-velocity transaction clusters (5+ transactions in 24h) account for <strong>38% of all fraud</strong> despite representing only 12% of total volume.
-    </p>
-    <div class="ai-grid">
-      <div class="ai-point">
-        <span>🌍 Foreign Transactions</span>
-        Significantly elevated fraud probability. Recommend enhanced verification for cross-border transactions, especially Travel and Electronics categories.
+  <div class="ai-wrap reveal rd1">
+    <div class="ai-main">
+      <div class="ai-badge">✦ AI Report · Gemma via Ollama</div>
+      <p class="ai-text">
+        Based on analysis of <strong>10,000 transactions</strong>, the model identified <span class="fraud-num">151 confirmed fraud cases</span> totaling <span class="fraud-num">₹32,640</span> in losses.<br><br>
+        Foreign transactions exhibit a fraud rate <strong>3.2× higher</strong> than domestic. High-velocity clusters (5+ transactions in 24h) account for <span class="fraud-num">38% of all fraud</span> despite representing only <span class="safe-num">12% of total volume</span>.<br><br>
+        Combining foreign flagging, velocity caps, and device trust scoring could theoretically prevent an estimated <span class="safe-num">~60% of detected fraud cases</span>.
+      </p>
+    </div>
+    <div class="ai-points">
+      <div class="ai-point red-border" style="margin-bottom:1px">
+        <div class="ai-point-title"><span class="dot dot-red"></span> Foreign Transactions</div>
+        <div class="ai-point-body">3.2× elevated fraud probability. Enhanced verification recommended for cross-border transactions, especially Travel and Electronics.</div>
       </div>
-      <div class="ai-point">
-        <span>⚡ High Velocity</span>
-        5+ transactions within 24 hours is a strong fraud predictor. Dynamic rate-limiting and real-time velocity monitoring recommended.
+      <div class="ai-point red-border" style="margin-bottom:1px">
+        <div class="ai-point-title"><span class="dot dot-red"></span> High Velocity</div>
+        <div class="ai-point-body">5+ transactions in 24h is a strong fraud predictor. Dynamic rate-limiting and real-time velocity monitoring advised.</div>
       </div>
-      <div class="ai-point">
-        <span>📱 Low Device Trust</span>
-        Unrecognized or low-trust devices show 4× higher fraud rates. Biometric or OTP re-verification should be triggered automatically.
+      <div class="ai-point red-border" style="margin-bottom:1px">
+        <div class="ai-point-title"><span class="dot dot-red"></span> Low Device Trust</div>
+        <div class="ai-point-body">Unrecognized devices show 4× higher fraud rates. Biometric or OTP re-verification should trigger automatically.</div>
       </div>
-      <div class="ai-point">
-        <span>🛒 Merchant Risk</span>
-        Grocery and Travel categories drive the highest fraud amounts. Category-specific fraud scoring thresholds would reduce false negatives.
+      <div class="ai-point green-border">
+        <div class="ai-point-title"><span class="dot dot-green"></span> Category Thresholds</div>
+        <div class="ai-point-body">Grocery and Travel categories drive highest fraud amounts. Per-category scoring thresholds would reduce false negatives significantly.</div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="wiggle-wrap" style="margin:0 3rem;">
-  <svg viewBox="0 0 1200 24" preserveAspectRatio="none" style="height:24px;">
-    <path d="M0,6 C200,18 400,0 600,12 C800,24 1000,4 1200,12" fill="none" stroke="rgba(24,22,42,0.1)" stroke-width="2"/>
-  </svg>
-</div>
-
-<!-- INSIGHTS BENTO -->
+<!-- INSIGHTS -->
 <section class="section" id="insights">
   <div class="reveal">
-    <div class="eyebrow sky">🎯 04 · Key Findings</div>
+    <div class="sec-label"><span>04</span> — key findings</div>
     <h2 class="sec-title">What the data<br>revealed</h2>
-    <p class="sec-sub">Six concrete findings from the fraud analysis — each pointing to actionable prevention strategies.</p>
+    <p class="sec-sub">Six concrete findings from fraud analysis — each pointing to actionable prevention strategies.</p>
   </div>
-  <div class="ins-bento reveal rd1">
-    <div class="ins-card bg-coral">
-      <span class="ins-icon">🌍</span>
+  <div class="ins-grid reveal rd1">
+    <div class="ins-card">
       <div class="ins-label">Foreign Transactions</div>
-      <div class="ins-num">3.2×</div>
+      <div class="ins-num red">3.2×</div>
       <div class="ins-desc">Foreign transactions carry over 3× the fraud rate of domestic ones — the single strongest risk signal in the dataset.</div>
+      <div class="ins-tag red">High Risk</div>
     </div>
-    <div class="ins-card bg-lemon">
-      <span class="ins-icon">⚡</span>
+    <div class="ins-card">
       <div class="ins-label">Velocity Risk</div>
-      <div class="ins-num">38%</div>
-      <div class="ins-desc">High-velocity transactions (5+ in 24h) account for 38% of all fraud cases — velocity monitoring is critical.</div>
+      <div class="ins-num red">38%</div>
+      <div class="ins-desc">High-velocity transactions (5+ in 24h) account for 38% of all fraud cases despite low volume share.</div>
+      <div class="ins-tag red">Critical Signal</div>
     </div>
-    <div class="ins-card bg-mint">
-      <span class="ins-icon">📱</span>
+    <div class="ins-card no-border-r">
       <div class="ins-label">Device Trust</div>
-      <div class="ins-num">4×</div>
+      <div class="ins-num red">4×</div>
       <div class="ins-desc">Low-trust device scores correlate with fraud at 4× the baseline rate. Device fingerprinting is a high-value signal.</div>
+      <div class="ins-tag red">Monitor</div>
     </div>
-    <div class="ins-card bg-sky span2">
-      <span class="ins-icon">🛒</span>
+    <div class="ins-card span2 no-border-b">
       <div class="ins-label">Top Risk Categories</div>
-      <div class="ins-num">Grocery & Travel</div>
-      <div class="ins-desc">These two merchant categories contribute the highest absolute fraud amounts, despite moderate fraud rates — high transaction values amplify impact. Dynamic per-category scoring thresholds would directly reduce financial exposure.</div>
+      <div class="ins-num" style="font-size:2rem;color:var(--white);">Grocery & Travel</div>
+      <div class="ins-desc">These two merchant categories contribute the highest absolute fraud amounts despite moderate fraud rates — high transaction values amplify impact. Dynamic per-category scoring thresholds would directly reduce financial exposure.</div>
+      <div class="ins-tag red">Action Required</div>
     </div>
-    <div class="ins-card bg-lilac">
-      <span class="ins-icon">💡</span>
+    <div class="ins-card no-border-r no-border-b">
       <div class="ins-label">Prevention ROI</div>
-      <div class="ins-num">↓ 60%</div>
-      <div class="ins-desc">Combining foreign flagging + velocity caps + device trust could theoretically prevent ~60% of detected fraud.</div>
+      <div class="ins-num green">↓ 60%</div>
+      <div class="ins-desc">Combining foreign flagging + velocity caps + device trust could prevent ~60% of detected fraud.</div>
+      <div class="ins-tag green">Opportunity</div>
     </div>
   </div>
 </section>
 
 <!-- SQL CODE -->
-<section class="section">
+<section class="section code-section">
   <div class="reveal">
-    <div class="eyebrow peach">⌨️ 05 · SQL Analysis</div>
+    <div class="sec-label"><span>05</span> — sql analysis</div>
     <h2 class="sec-title">Fraud logic in SQL</h2>
-    <p class="sec-sub">Key queries that calculated fraud rates, segmented risk groups, and surfaced patterns by merchant, origin, and velocity.</p>
+    <p class="sec-sub">Key queries calculating fraud rates, segmented risk groups, and surfacing patterns by merchant, origin, and velocity.</p>
   </div>
-  <div class="code-card reveal rd1">
+  <div class="code-wrap reveal rd1">
     <div class="code-bar">
-      <div class="cbt"></div><div class="cbt"></div><div class="cbt"></div>
-      <span class="code-fname">fraud detection query.sql</span>
+      <div class="cb cb1"></div><div class="cb cb2"></div><div class="cb cb3"></div>
+      <span class="code-fname">fraud_detection_query.sql</span>
     </div>
     <pre><span class="cc">-- Overall fraud rate</span>
 <span class="ck">SELECT</span>
   <span class="cf">COUNT</span>(*) <span class="ck">AS</span> total_transactions,
   <span class="cf">SUM</span>(<span class="ck">CASE WHEN</span> is_fraud = <span class="cn">1</span> <span class="ck">THEN</span> <span class="cn">1</span> <span class="ck">ELSE</span> <span class="cn">0</span> <span class="ck">END</span>) <span class="ck">AS</span> fraud_count,
-  <span class="cf">ROUND</span>(<span class="cf">AVG</span>(is_fraud::numeric) * <span class="cn">100</span>, <span class="cn">2</span>)     <span class="ck">AS</span> fraud_rate_pct
+  <span class="cf">ROUND</span>(<span class="cf">AVG</span>(is_fraud::numeric) * <span class="cn">100</span>, <span class="cn">2</span>) <span class="ck">AS</span> fraud_rate_pct
 <span class="ck">FROM</span> credit_card_transactions;
 
 <span class="cc">-- Fraud rate by merchant category</span>
@@ -895,14 +779,12 @@ footer {
 <span class="cc">-- High-velocity fraud detection</span>
 <span class="ck">WITH</span> velocity <span class="ck">AS</span> (
   <span class="ck">SELECT</span>
-    customer_id,
-    transaction_date,
+    customer_id, transaction_date,
     <span class="cf">COUNT</span>(*) <span class="ck">OVER</span> (
       <span class="ck">PARTITION BY</span> customer_id
       <span class="ck">ORDER BY</span> transaction_date
       <span class="ck">RANGE BETWEEN INTERVAL</span> <span class="cs">'1 day'</span> <span class="ck">PRECEDING AND CURRENT ROW</span>
-    ) <span class="ck">AS</span> txn_last_24h,
-    is_fraud
+    ) <span class="ck">AS</span> txn_last_24h, is_fraud
   <span class="ck">FROM</span> credit_card_transactions
 )
 <span class="ck">SELECT</span>
@@ -919,208 +801,46 @@ footer {
 
 <!-- FOOTER -->
 <footer>
-  <div class="foot-brand">
-    <span class="foot-brand-dot"></span>
-    Credit Card Fraud Detection
-  </div>
+  <div class="foot-logo">FRAUD_DETECTION<span>.</span>ML</div>
   <div class="foot-links">
     <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank">GitHub Repo</a>
     <a href="https://github.com/alviyar/credit-card-fraud-detection/blob/main/credit_card_fraud_detection.py" target="_blank">Python Script</a>
     <a href="https://github.com/alviyar/credit-card-fraud-detection/blob/main/fraud%20detection%20query.sql" target="_blank">SQL Queries</a>
-    <a href="https://github.com/alviyar/credit-card-fraud-detection/blob/main/credit%20card%20fraud%20detection%20doc.docx" target="_blank">Documentation</a>
+    <a href="https://github.com/alviyar/credit-card-fraud-detection/blob/main/credit%20card%20fraud%20detection%20doc.docx" target="_blank">Docs</a>
   </div>
 </footer>
 
-</div><!-- /page -->
-
 <script>
-// NAV
+// Nav scroll
 window.addEventListener('scroll', () =>
-  document.getElementById('nav').classList.toggle('up', scrollY > 20)
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 10)
 );
 
-// COUNT UP
-function countUp(el, target, dur=1400) {
-  const step = target/(dur/16); let v=0;
-  const t = setInterval(()=>{
-    v = Math.min(v+step, target);
-    el.textContent = Math.floor(v).toLocaleString();
-    if(v>=target) clearInterval(t);
-  }, 16);
-}
-document.querySelectorAll('[data-count]').forEach(el => countUp(el, +el.dataset.count));
-
-// CHART DEFAULTS
-Chart.defaults.color = '#7c79a0';
-Chart.defaults.borderColor = 'rgba(24,22,42,0.08)';
-Chart.defaults.font.family = "'Nunito', sans-serif";
-Chart.defaults.font.size = 11;
-Chart.defaults.font.weight = '700';
-
-const CORAL  = 'rgba(255,95,63,0.82)';
-const MINT   = 'rgba(56,201,138,0.82)';
-const SKY    = 'rgba(63,168,232,0.82)';
-const LILAC  = 'rgba(139,92,246,0.82)';
-const PEACH  = 'rgba(245,158,11,0.82)';
-const LEMON  = 'rgba(212,200,0,0.82)';
-
-// BAR — merchant category
-const barCtx = document.getElementById('c-bar').getContext('2d');
-const barChart = new Chart(barCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Grocery','Travel','Electronics','Dining','Healthcare','Retail'],
-    datasets: [{
-      data: [8400, 7200, 5800, 4100, 3200, 2650],
-      backgroundColor: [CORAL, PEACH, SKY, MINT, LILAC, LEMON],
-      borderWidth: 0, borderRadius: 8, borderSkipped: false
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { display: false } },
-      y: { grid: { color: 'rgba(24,22,42,0.05)' }, ticks: { callback: v => '₹'+(v/1000)+'k' } }
-    },
-    animation: { duration: 1200, easing: 'easeOutQuart' }
-  }
-});
-
-// DONUT — risk distribution
-const donutCtx = document.getElementById('c-donut').getContext('2d');
-const donutData = {
-  all:      [42, 35, 23],
-  foreign:  [68, 22, 10],
-  domestic: [28, 42, 30],
-  highvel:  [72, 18, 10]
-};
-const donutChart = new Chart(donutCtx, {
-  type: 'doughnut',
-  data: {
-    labels: ['High Risk','Medium','Low Risk'],
-    datasets: [{ data: donutData.all, backgroundColor: [CORAL, PEACH, MINT], borderWidth: 0, hoverOffset: 6 }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    cutout: '65%',
-    plugins: { legend: { display: false } },
-    animation: { duration: 1200 }
-  }
-});
-
-// Legend
-const legEl = document.getElementById('dleg');
-[['High Risk', CORAL], ['Medium Risk', PEACH], ['Low Risk', MINT]].forEach(([l,c], i) => {
-  legEl.innerHTML += `<div class="dleg-row">
-    <span class="dleg-left"><span class="dleg-dot" style="background:${c}"></span>${l}</span>
-    <span id="dleg-${i}">—</span>
-  </div>`;
-});
-function updateLegend(data) {
-  [0,1,2].forEach(i => {
-    const el = document.getElementById('dleg-'+i);
-    if(el) el.textContent = data[i]+'%';
-  });
-}
-updateLegend(donutData.all);
-
-// VELOCITY BAR CHART
-const velCtx = document.getElementById('c-vel').getContext('2d');
-new Chart(velCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Normal','Medium Vel','High Vel'],
-    datasets: [{
-      label: 'Fraud Rate %',
-      data: [0.8, 2.4, 6.7],
-      backgroundColor: [MINT, PEACH, CORAL],
-      borderWidth: 0, borderRadius: 8
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    indexAxis: 'y',
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(24,22,42,0.05)' }, ticks: { callback: v => v+'%' } },
-      y: { grid: { display: false } }
-    },
-    animation: { duration: 1200, easing: 'easeOutQuart' }
-  }
-});
-
-// SEGMENT TABLE
-const segs = [
-  ['Foreign + High Vel', '9.2%', 'chip-hi', 'High'],
-  ['Foreign + Low Trust', '7.8%', 'chip-hi', 'High'],
-  ['High Velocity', '6.7%', 'chip-hi', 'High'],
-  ['Low Device Trust', '4.3%', 'chip-mid', 'Medium'],
-  ['Domestic Standard', '0.8%', 'chip-low', 'Low'],
-];
-const tb = document.getElementById('seg-tb');
-segs.forEach(([s,r,c,l]) => {
-  tb.innerHTML += `<tr><td>${s}</td><td>${r}</td><td><span class="chip ${c}">${l}</span></td></tr>`;
-});
-
-// DEVICE TRUST BARS
-const devData = [
-  { l:'Low Trust',    v:82, c:'pb-coral' },
-  { l:'Medium Trust', v:45, c:'pb-peach' },
-  { l:'High Trust',   v:12, c:'pb-mint'  },
-];
-const devEl = document.getElementById('dev-progs');
-devData.forEach(({l,v,c}) => {
-  devEl.innerHTML += `
-    <div>
-      <div class="prog-lbl-row"><span>${l}</span><span>${v}% of fraud</span></div>
-      <div class="prog-track"><div class="prog-bar ${c}" data-w="${v}"></div></div>
-    </div>`;
-});
-
-// FILTER
-const filterData = {
-  all:      [8400,7200,5800,4100,3200,2650],
-  foreign:  [12100,10800,7200,5400,4100,3200],
-  domestic: [4200,3800,3100,2600,2000,1800],
-  highvel:  [15400,12200,9800,7200,5600,4100]
-};
-document.getElementById('filter-row').addEventListener('click', e => {
-  const b = e.target.closest('.fbtn'); if(!b) return;
-  document.querySelectorAll('.fbtn').forEach(x => x.classList.remove('on'));
-  b.classList.add('on');
-  const f = b.dataset.f;
-  barChart.data.datasets[0].data = filterData[f];
-  barChart.update();
-  donutChart.data.datasets[0].data = donutData[f];
-  donutChart.update();
-  updateLegend(donutData[f]);
-});
-
-// SCROLL REVEAL
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting) {
-      e.target.classList.add('show');
-      e.target.querySelectorAll('.prog-bar[data-w]').forEach(b => {
-        setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 300);
-      });
-    }
-  });
-}, { threshold: 0.1 });
+// Scroll reveal
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); }),
+  { threshold: 0.08 }
+);
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-// Trigger bars when dashboard panel visible
-const dashShell = document.querySelector('.dash-shell');
-if(dashShell) {
-  new IntersectionObserver(([e]) => {
-    if(e.isIntersecting) {
-      document.querySelectorAll('.prog-bar[data-w]').forEach(b => {
-        setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 500);
-      });
-    }
-  }, { threshold: 0.2 }).observe(dashShell);
+// Image upload for dashboard placeholder
+function loadImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const placeholder = document.getElementById('img-placeholder');
+    const wrap = placeholder.parentNode;
+    const img = document.createElement('img');
+    img.className = 'fraud.png';
+    img.src = ev.target.result;
+    img.alt = 'Power BI Fraud Detection Dashboard';
+    wrap.replaceChild(img, placeholder);
+  };
+  reader.readAsDataURL(file);
 }
 </script>
+</body>
+</html>
 </body>
 </html>
