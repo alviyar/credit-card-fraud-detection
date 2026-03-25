@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credit Card Fraud Detection</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -25,8 +25,11 @@ html { scroll-behavior: smooth; }
   --white: #141210;
   --white-dim: rgba(20,18,16,0.55);
   --white-faint: rgba(20,18,16,0.35);
-  --mono: 'DM Mono', monospace;
-  --sans: 'Syne', sans-serif;
+
+  /* UPDATED: Finance-grade font stack */
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;    /* Bloomberg / terminal style */
+  --sans: 'IBM Plex Sans', 'Helvetica Neue', sans-serif; /* clean data labels */
+  --serif: 'Cormorant Garamond', 'Georgia', serif;         /* formal finance serif for numbers */
 }
 
 body {
@@ -111,26 +114,31 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .tag-blink { width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: pulse-red 1.4s infinite; }
 
+/* UPDATED: hero title now uses Playfair Display — authoritative serif */
 .hero-title {
+  font-family: var(--serif);
   font-size: clamp(3.5rem, 7vw, 6.5rem);
-  font-weight: 800; line-height: 0.95; letter-spacing: -0.04em;
+  font-weight: 700; line-height: 0.95; letter-spacing: 0.01em;
   margin-bottom: 0.6rem;
+  font-variant-numeric: lining-nums;
 }
 .hero-title .line2 { color: var(--white-faint); }
 .hero-title .line3 {
-  -webkit-text-stroke: 1px rgba(230,57,70,0.6);
+  -webkit-text-stroke: 1.5px rgba(230,57,70,0.6);
   color: transparent;
+  font-style: italic;
 }
 
 .hero-bottom {
   display: flex; align-items: flex-end; justify-content: space-between;
   margin-top: 4rem; gap: 3rem; flex-wrap: wrap;
 }
+/* UPDATED: body copy uses IBM Plex Sans for readability */
 .hero-desc {
-  font-family: var(--mono); font-size: 0.82rem; line-height: 1.8;
+  font-family: var(--sans); font-size: 0.9rem; line-height: 1.75;
   color: var(--white-dim); max-width: 420px; font-weight: 300;
 }
-.hero-desc strong { color: var(--white); font-weight: 500; }
+.hero-desc strong { color: var(--white); font-weight: 600; }
 
 .hero-stats {
   display: flex; gap: 3rem;
@@ -138,9 +146,13 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .hstat {
   text-align: right;
 }
+/* UPDATED: stat numbers use Playfair for gravitas */
 .hstat-num {
-  font-size: 2.2rem; font-weight: 800; line-height: 1;
+  font-family: var(--serif);
+  font-size: 2.4rem; font-weight: 700; line-height: 1;
+  letter-spacing: 0.02em;
   margin-bottom: 0.25rem;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .hstat-num.red { color: var(--red); }
 .hstat-num.green { color: var(--green); }
@@ -212,13 +224,17 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .sec-label span { color: var(--red); }
 
+/* UPDATED: section titles use Playfair Display */
 .sec-title {
-  font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800;
-  line-height: 1.05; letter-spacing: -0.03em;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
+  line-height: 1.1; letter-spacing: 0.01em;
   margin-bottom: 1rem;
 }
+
+/* UPDATED: subtitles use IBM Plex Sans */
 .sec-sub {
-  font-family: var(--mono); font-size: 0.8rem; line-height: 1.8;
+  font-family: var(--sans); font-size: 0.875rem; line-height: 1.75;
   color: var(--white-dim); max-width: 500px; font-weight: 300;
   margin-bottom: 4rem;
 }
@@ -244,9 +260,10 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .feat-icon.red { background: var(--red-dim); border: 1px solid rgba(230,57,70,0.2); }
 .feat-icon.green { background: var(--green-dim); border: 1px solid rgba(45,198,83,0.15); }
 
-.feat-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.7rem; }
+/* UPDATED: card titles use IBM Plex Sans semibold */
+.feat-title { font-family: var(--sans); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.7rem; }
 .feat-body {
-  font-family: var(--mono); font-size: 0.72rem; line-height: 1.7;
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.7;
   color: var(--white-dim); font-weight: 300;
 }
 
@@ -266,9 +283,13 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   background: var(--bg2); min-width: 120px;
 }
 .dkpi:last-child { border-right: none; }
+/* UPDATED: KPI values use Playfair for financial weight */
 .dkpi-val {
-  font-size: 1.5rem; font-weight: 800; line-height: 1;
+  font-family: var(--serif);
+  font-size: 1.6rem; font-weight: 700; line-height: 1;
+  letter-spacing: 0.02em;
   margin-bottom: 0.3rem;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .dkpi-val.red { color: var(--red); }
 .dkpi-val.green { color: var(--green); }
@@ -332,12 +353,12 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   position: relative; z-index: 1;
 }
 .placeholder-text {
-  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.04em;
   color: var(--white-faint); text-align: center; line-height: 1.6;
   position: relative; z-index: 1;
 }
 .placeholder-text strong {
-  display: block; font-size: 0.8rem; color: var(--white-dim);
+  display: block; font-size: 0.85rem; color: var(--white-dim);
   margin-bottom: 0.3rem; font-weight: 500;
 }
 .placeholder-upload-btn {
@@ -349,7 +370,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .placeholder-upload-btn:hover { opacity: 0.8; }
 
-/* Hidden actual dashboard image (shown after upload) */
 .dash-img {
   width: 100%; display: block;
 }
@@ -374,13 +394,14 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   padding: 0.2rem 0.65rem; background: var(--green-dim);
   margin-bottom: 1.5rem;
 }
+/* UPDATED: AI prose uses IBM Plex Sans for readability */
 .ai-text {
-  font-family: var(--mono); font-size: 0.8rem; line-height: 1.9;
+  font-family: var(--sans); font-size: 0.875rem; line-height: 1.85;
   color: var(--white-dim); font-weight: 300;
 }
-.ai-text strong { color: var(--white); font-weight: 500; }
-.ai-text .fraud-num { color: var(--red); font-weight: 500; }
-.ai-text .safe-num { color: var(--green); font-weight: 500; }
+.ai-text strong { color: var(--white); font-weight: 600; }
+.ai-text .fraud-num { color: var(--red); font-weight: 600; }
+.ai-text .safe-num { color: var(--green); font-weight: 600; }
 
 .ai-points { background: var(--bg3); padding: 2rem; display: flex; flex-direction: column; gap: 1px; }
 .ai-point {
@@ -394,14 +415,14 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .ai-point.green-border { border-left-color: rgba(45,198,83,0.35); }
 
 .ai-point-title {
-  font-size: 0.78rem; font-weight: 700; margin-bottom: 0.4rem;
+  font-family: var(--sans); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem;
   display: flex; align-items: center; gap: 0.5rem;
 }
 .ai-point-title .dot { width: 5px; height: 5px; border-radius: 50%; }
 .dot-red { background: var(--red); }
 .dot-green { background: var(--green); }
 .ai-point-body {
-  font-family: var(--mono); font-size: 0.7rem; line-height: 1.7;
+  font-family: var(--sans); font-size: 0.78rem; line-height: 1.7;
   color: var(--white-dim); font-weight: 300;
 }
 
@@ -424,9 +445,12 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .ins-card.no-border-r { border-right: none; }
 .ins-card.no-border-b { border-bottom: none; }
 
+/* UPDATED: big insight numbers use Playfair for gravitas */
 .ins-num {
-  font-size: 3rem; font-weight: 800; line-height: 1;
-  margin-bottom: 0.5rem; letter-spacing: -0.03em;
+  font-family: var(--serif);
+  font-size: 3.2rem; font-weight: 700; line-height: 1;
+  margin-bottom: 0.5rem; letter-spacing: 0.02em;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .ins-num.red { color: var(--red); }
 .ins-num.green { color: var(--green); }
@@ -437,7 +461,7 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   color: var(--white-faint); margin-bottom: 0.7rem;
 }
 .ins-desc {
-  font-family: var(--mono); font-size: 0.72rem; line-height: 1.7;
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.7;
   color: var(--white-dim); font-weight: 300;
 }
 .ins-tag {
@@ -470,9 +494,10 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   color: var(--white-faint); margin-left: 0.8rem;
   letter-spacing: 0.06em;
 }
+/* IBM Plex Mono is perfect for code blocks */
 pre {
   background: #1e1c18; padding: 2rem;
-  font-family: var(--mono); font-size: 0.74rem;
+  font-family: var(--mono); font-size: 0.78rem;
   line-height: 2; color: rgba(240,237,232,0.55);
   overflow-x: auto;
 }
@@ -663,8 +688,7 @@ footer {
       </div>
       <div style="font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;color:var(--white-faint);">10,000 RECORDS · 151 FRAUD</div>
     </div>
-    <!-- IMAGE PLACEHOLDER — replace src with your dashboard image -->
-         <img class="dash-img" src="fraud.png" alt="Power BI Fraud Detection Dashboard">
+    <img class="dash-img" src="fraud.png" alt="Power BI Fraud Detection Dashboard">
   </div>
 </section>
 
@@ -733,7 +757,7 @@ footer {
     </div>
     <div class="ins-card span2 no-border-b">
       <div class="ins-label">Top Risk Categories</div>
-      <div class="ins-num" style="font-size:2rem;color:var(--white);">Grocery & Travel</div>
+      <div class="ins-num" style="font-size:2rem;color:var(--white);font-family:var(--serif);">Grocery & Travel</div>
       <div class="ins-desc">These two merchant categories contribute the highest absolute fraud amounts despite moderate fraud rates — high transaction values amplify impact. Dynamic per-category scoring thresholds would directly reduce financial exposure.</div>
       <div class="ins-tag red">Action Required</div>
     </div>
@@ -840,7 +864,5 @@ function loadImage(e) {
   reader.readAsDataURL(file);
 }
 </script>
-</body>
-</html>
 </body>
 </html>
