@@ -23,13 +23,14 @@ html { scroll-behavior: smooth; }
   --green-dim: rgba(26,153,64,0.07);
   --green-mid: rgba(26,153,64,0.16);
   --white: #141210;
-  --white-dim: rgba(20,18,16,0.55);
-  --white-faint: rgba(20,18,16,0.35);
+  /* FIX 1: darkened from 0.55 → 0.75 */
+  --white-dim: rgba(20,18,16,0.75);
+  /* FIX 1: darkened from 0.35 → 0.55 */
+  --white-faint: rgba(20,18,16,0.55);
 
-  /* UPDATED: Finance-grade font stack */
-  --mono: 'IBM Plex Mono', 'Courier New', monospace;    /* Bloomberg / terminal style */
-  --sans: 'IBM Plex Sans', 'Helvetica Neue', sans-serif; /* clean data labels */
-  --serif: 'Cormorant Garamond', 'Georgia', serif;         /* formal finance serif for numbers */
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --sans: 'IBM Plex Sans', 'Helvetica Neue', sans-serif;
+  --serif: 'Cormorant Garamond', 'Georgia', serif;
 }
 
 body {
@@ -39,7 +40,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ── GRAIN OVERLAY ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -114,7 +114,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .tag-blink { width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: pulse-red 1.4s infinite; }
 
-/* UPDATED: hero title now uses Playfair Display — authoritative serif */
 .hero-title {
   font-family: var(--serif);
   font-size: clamp(3.5rem, 7vw, 6.5rem);
@@ -133,20 +132,14 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   display: flex; align-items: flex-end; justify-content: space-between;
   margin-top: 4rem; gap: 3rem; flex-wrap: wrap;
 }
-/* UPDATED: body copy uses IBM Plex Sans for readability */
 .hero-desc {
   font-family: var(--sans); font-size: 0.9rem; line-height: 1.75;
   color: var(--white-dim); max-width: 420px; font-weight: 300;
 }
 .hero-desc strong { color: var(--white); font-weight: 600; }
 
-.hero-stats {
-  display: flex; gap: 3rem;
-}
-.hstat {
-  text-align: right;
-}
-/* UPDATED: stat numbers use Playfair for gravitas */
+.hero-stats { display: flex; gap: 3rem; }
+.hstat { text-align: right; }
 .hstat-num {
   font-family: var(--serif);
   font-size: 2.4rem; font-weight: 700; line-height: 1;
@@ -180,12 +173,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   transition: all 0.2s;
 }
 .btn-ghost:hover { color: var(--white); border-color: var(--border-bright); background: rgba(255,255,255,0.04); }
-
-/* ── DIVIDER LINE ── */
-.divider {
-  border: none; border-top: 1px solid var(--border);
-  margin: 0; position: relative; z-index: 1;
-}
 
 /* ── TICKER ── */
 .ticker {
@@ -224,7 +211,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .sec-label span { color: var(--red); }
 
-/* UPDATED: section titles use Playfair Display */
 .sec-title {
   font-family: var(--serif);
   font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
@@ -232,7 +218,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   margin-bottom: 1rem;
 }
 
-/* UPDATED: subtitles use IBM Plex Sans */
 .sec-sub {
   font-family: var(--sans); font-size: 0.875rem; line-height: 1.75;
   color: var(--white-dim); max-width: 500px; font-weight: 300;
@@ -260,14 +245,13 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .feat-icon.red { background: var(--red-dim); border: 1px solid rgba(230,57,70,0.2); }
 .feat-icon.green { background: var(--green-dim); border: 1px solid rgba(45,198,83,0.15); }
 
-/* UPDATED: card titles use IBM Plex Sans semibold */
 .feat-title { font-family: var(--sans); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.7rem; }
 .feat-body {
   font-family: var(--sans); font-size: 0.8rem; line-height: 1.7;
   color: var(--white-dim); font-weight: 300;
 }
 
-/* ── DASHBOARD IMAGE SECTION ── */
+/* ── DASHBOARD ── */
 #dashboard { border-top: 1px solid var(--border); }
 
 .dash-top {
@@ -283,7 +267,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   background: var(--bg2); min-width: 120px;
 }
 .dkpi:last-child { border-right: none; }
-/* UPDATED: KPI values use Playfair for financial weight */
 .dkpi-val {
   font-family: var(--serif);
   font-size: 1.6rem; font-weight: 700; line-height: 1;
@@ -299,7 +282,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   color: var(--white-faint);
 }
 
-/* Dashboard image container */
 .dash-img-wrap {
   border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
   background: var(--bg2); position: relative;
@@ -317,62 +299,15 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 }
 .dash-live-dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--green);
-  box-shadow: 0 0 6px var(--green); animation: pulse-red 2s infinite;
-  animation-name: pulse-green;
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse-green 2s infinite;
 }
 @keyframes pulse-green {
   0%,100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
   50% { opacity: 0.4; box-shadow: 0 0 2px var(--green); }
 }
 
-/* ── IMAGE PLACEHOLDER ── */
-.img-placeholder {
-  width: 100%; aspect-ratio: 16/9;
-  background: var(--bg3);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 1rem; cursor: pointer;
-  transition: background 0.2s;
-  position: relative; overflow: hidden;
-}
-.img-placeholder::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(rgba(200,32,46,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(200,32,46,0.04) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-.img-placeholder:hover { background: #1a1a1a; }
-
-.placeholder-icon {
-  width: 56px; height: 56px; border-radius: 10px;
-  border: 1px solid var(--border-bright);
-  display: flex; align-items: center; justify-content: center;
-  background: var(--bg2); font-size: 1.5rem;
-  position: relative; z-index: 1;
-}
-.placeholder-text {
-  font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.04em;
-  color: var(--white-faint); text-align: center; line-height: 1.6;
-  position: relative; z-index: 1;
-}
-.placeholder-text strong {
-  display: block; font-size: 0.85rem; color: var(--white-dim);
-  margin-bottom: 0.3rem; font-weight: 500;
-}
-.placeholder-upload-btn {
-  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
-  color: var(--bg); background: var(--white);
-  border: none; border-radius: 4px; padding: 0.45rem 1.2rem;
-  cursor: pointer; position: relative; z-index: 1;
-  text-transform: uppercase; transition: opacity 0.2s;
-}
-.placeholder-upload-btn:hover { opacity: 0.8; }
-
-.dash-img {
-  width: 100%; display: block;
-}
+.dash-img { width: 100%; display: block; }
 
 /* ── AI SECTION ── */
 #ai-section { border-top: 1px solid var(--border); }
@@ -394,7 +329,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   padding: 0.2rem 0.65rem; background: var(--green-dim);
   margin-bottom: 1.5rem;
 }
-/* UPDATED: AI prose uses IBM Plex Sans for readability */
 .ai-text {
   font-family: var(--sans); font-size: 0.875rem; line-height: 1.85;
   color: var(--white-dim); font-weight: 300;
@@ -409,8 +343,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   border-left: 2px solid transparent;
   transition: border-color 0.2s;
 }
-.ai-point:hover.red-border { border-left-color: var(--red); }
-.ai-point:hover.green-border { border-left-color: var(--green); }
 .ai-point.red-border { border-left-color: rgba(230,57,70,0.35); }
 .ai-point.green-border { border-left-color: rgba(45,198,83,0.35); }
 
@@ -445,7 +377,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .ins-card.no-border-r { border-right: none; }
 .ins-card.no-border-b { border-bottom: none; }
 
-/* UPDATED: big insight numbers use Playfair for gravitas */
 .ins-num {
   font-family: var(--serif);
   font-size: 3.2rem; font-weight: 700; line-height: 1;
@@ -473,6 +404,68 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
 .ins-tag.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(230,57,70,0.2); }
 .ins-tag.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(45,198,83,0.15); }
 
+/* ── BUSINESS RECOMMENDATIONS ── */
+#recommendations { border-top: 1px solid var(--border); }
+
+.rec-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  margin-top: 3rem;
+}
+
+.rec-card {
+  background: var(--bg2); padding: 2rem 1.8rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.25s;
+  position: relative;
+}
+.rec-card:hover { background: var(--bg3); }
+.rec-card.no-border-r { border-right: none; }
+.rec-card.no-border-b { border-bottom: none; }
+
+.rec-num {
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--white-faint);
+  margin-bottom: 1rem;
+}
+.rec-num span { color: var(--red); }
+
+.rec-icon {
+  font-size: 1.2rem; margin-bottom: 1rem;
+  display: block;
+}
+
+.rec-title {
+  font-family: var(--sans); font-size: 0.92rem; font-weight: 600;
+  margin-bottom: 0.6rem; color: var(--white);
+  line-height: 1.3;
+}
+
+.rec-body {
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.75;
+  color: var(--white-dim); font-weight: 300;
+  margin-bottom: 1.2rem;
+}
+
+.rec-evidence {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.06em;
+  color: var(--white-faint);
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.rec-evidence strong { color: var(--red); }
+
+.rec-tag {
+  display: inline-block; margin-top: 1rem;
+  font-family: var(--mono); font-size: 0.56rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 0.18rem 0.55rem;
+  border-radius: 3px;
+}
+.rec-tag.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(230,57,70,0.2); }
+.rec-tag.amber { background: rgba(245,158,11,0.07); color: #b45309; border: 1px solid rgba(245,158,11,0.25); }
+.rec-tag.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(45,198,83,0.15); }
+
 /* ── CODE SECTION ── */
 .code-section { border-top: 1px solid var(--border); }
 
@@ -494,7 +487,6 @@ nav.scrolled { border-bottom-color: var(--border-bright); }
   color: var(--white-faint); margin-left: 0.8rem;
   letter-spacing: 0.06em;
 }
-/* IBM Plex Mono is perfect for code blocks */
 pre {
   background: #1e1c18; padding: 2rem;
   font-family: var(--mono); font-size: 0.78rem;
@@ -565,6 +557,7 @@ footer {
     <a href="#dashboard">dashboard</a>
     <a href="#ai-section">ai report</a>
     <a href="#insights">insights</a>
+    <a href="#recommendations">sql</a>
   </div>
   <a href="https://github.com/alviyar/credit-card-fraud-detection" target="_blank" class="nav-cta">
     ↗ GitHub
@@ -823,6 +816,90 @@ footer {
   </div>
 </section>
 
+<!-- BUSINESS RECOMMENDATIONS -->
+<section class="section" id="recommendations">
+  <div class="reveal">
+    <div class="sec-label"><span>06</span> — business recommendations</div>
+    <h2 class="sec-title">Six controls to deploy<br>right now</h2>
+    <p class="sec-sub">Each recommendation is tied directly to a SQL finding — prioritized by fraud impact and implementation urgency.</p>
+  </div>
+  <div class="rec-grid reveal rd1">
+
+    <!-- Rec 1 -->
+    <div class="rec-card">
+      <div class="rec-num"><span>REC 01</span> — Foreign Monitoring</div>
+      <span class="rec-icon">🌐</span>
+      <div class="rec-title">Strengthen verification for foreign transactions</div>
+      <div class="rec-body">
+        Cross-border transactions carry a 4.08% fraud rate versus just 0.70% domestically — a 3.2× gap. Implement a dedicated verification layer (step-up authentication, SMS OTP, or callback confirmation) triggered automatically on any foreign card activity.
+      </div>
+      <div class="rec-evidence">Supporting query: Q6 · <strong>Foreign txns: 4.08% fraud rate vs 0.70% domestic</strong></div>
+      <div class="rec-tag red">High Priority</div>
+    </div>
+
+    <!-- Rec 2 -->
+    <div class="rec-card">
+      <div class="rec-num"><span>REC 02</span> — Velocity Caps</div>
+      <span class="rec-icon">⚡</span>
+      <div class="rec-title">Implement dynamic rate-limiting at 5+ txns / 24h</div>
+      <div class="rec-body">
+        High-velocity customers represent only ~12% of total transaction volume but account for ~38% of all fraud cases — a 4.75% fraud rate versus 0.93% in normal-velocity groups. Enforce a soft cap at 5 transactions per 24 hours with escalating friction above that threshold.
+      </div>
+      <div class="rec-evidence">Supporting query: Q11 · <strong>High velocity: 4.75% fraud rate, 38% of all fraud</strong></div>
+      <div class="rec-tag red">High Priority</div>
+    </div>
+
+    <!-- Rec 3 -->
+    <div class="rec-card no-border-r">
+      <div class="rec-num"><span>REC 03</span> — Device Trust</div>
+      <span class="rec-icon">📱</span>
+      <div class="rec-title">Auto OTP / biometric for low device trust scores</div>
+      <div class="rec-body">
+        Devices scoring below 50 on the trust scale drive 4.24% fraud rates and contribute ~59% of all fraud despite covering the smallest volume segment. Any transaction on an unrecognized or low-trust device should auto-trigger OTP or biometric re-verification before approval.
+      </div>
+      <div class="rec-evidence">Supporting query: Q10 · <strong>Low trust bin: 4.24% rate, 59% of all fraud cases</strong></div>
+      <div class="rec-tag red">High Priority</div>
+    </div>
+
+    <!-- Rec 4 -->
+    <div class="rec-card">
+      <div class="rec-num"><span>REC 04</span> — Combined Signal</div>
+      <span class="rec-icon">🔗</span>
+      <div class="rec-title">Flag foreign + location mismatch combinations immediately</div>
+      <div class="rec-body">
+        When a foreign transaction also carries a location mismatch, fraud rate spikes to 6.2% — over 10× the dataset baseline. This specific combination should trigger an immediate hold and manual review or automated block, rather than standard friction.
+      </div>
+      <div class="rec-evidence">Supporting query: Q8 · <strong>Foreign + mismatch combined: 6.2% fraud rate (10× baseline)</strong></div>
+      <div class="rec-tag red">Immediate Action</div>
+    </div>
+
+    <!-- Rec 5 -->
+    <div class="rec-card">
+      <div class="rec-num"><span>REC 05</span> — Category Scoring</div>
+      <span class="rec-icon">🏪</span>
+      <div class="rec-title">Apply per-category fraud score thresholds</div>
+      <div class="rec-body">
+        Travel (2.21%) and Grocery (2.06%) carry the highest fraud rates by category. Because transaction amounts in these categories are large, financial impact per fraud event is disproportionate. Apply tighter approval thresholds and enhanced monitoring for these two categories specifically.
+      </div>
+      <div class="rec-evidence">Supporting queries: Q2, Q12 · <strong>Travel & Grocery: highest fraud rate and total fraud amount</strong></div>
+      <div class="rec-tag amber">Medium Priority</div>
+    </div>
+
+    <!-- Rec 6 -->
+    <div class="rec-card no-border-r">
+      <div class="rec-num"><span>REC 06</span> — ML Uplift</div>
+      <span class="rec-icon">🧠</span>
+      <div class="rec-title">Introduce real-time ML risk scoring to go beyond rules</div>
+      <div class="rec-body">
+        The rule-based system combining all three controls (foreign flag + velocity cap + device trust) catches an estimated ~60% of fraud. A real-time logistic regression or gradient-boosted model trained on all engineered features (ROC-AUC ~0.89) would significantly close that gap and reduce false positives simultaneously.
+      </div>
+      <div class="rec-evidence">Model evaluation · <strong>Logistic regression: Precision 0.74 · Recall 0.68 · ROC-AUC 0.89</strong></div>
+      <div class="rec-tag green">Strategic</div>
+    </div>
+
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="foot-logo">FRAUD_DETECTION<span>.</span>ML</div>
@@ -835,34 +912,15 @@ footer {
 </footer>
 
 <script>
-// Nav scroll
 window.addEventListener('scroll', () =>
   document.getElementById('nav').classList.toggle('scrolled', scrollY > 10)
 );
 
-// Scroll reveal
 const obs = new IntersectionObserver(entries =>
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); }),
   { threshold: 0.08 }
 );
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-// Image upload for dashboard placeholder
-function loadImage(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const placeholder = document.getElementById('img-placeholder');
-    const wrap = placeholder.parentNode;
-    const img = document.createElement('img');
-    img.className = 'fraud.png';
-    img.src = ev.target.result;
-    img.alt = 'Power BI Fraud Detection Dashboard';
-    wrap.replaceChild(img, placeholder);
-  };
-  reader.readAsDataURL(file);
-}
 </script>
 </body>
 </html>
